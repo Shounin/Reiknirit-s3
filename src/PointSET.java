@@ -14,32 +14,37 @@
 import java.util.Arrays;
 
 import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.introcs.In;
 import edu.princeton.cs.introcs.Out;
 
 public class PointSET {
+    SET<Point2D> pointSet;
+
     // construct an empty set of points
     public PointSET() {
-
+        pointSet = new SET<Point2D>();
     }
 
     // is the set empty?
     public boolean isEmpty() {
-        return false;
+
+        return pointSet.isEmpty();
     }
 
     // number of points in the set
     public int size() {
-        return 0;
+        return pointSet.size();
     }
 
     // add the point p to the set (if it is not already in the set)
     public void insert(Point2D p) {
+        pointSet.add(p);
     }
 
     // does the set contain the point p?
     public boolean contains(Point2D p) {
-        return false;
+        return pointSet.contains(p);
     }
 
     // draw all of the points to standard draw
