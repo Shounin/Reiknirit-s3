@@ -39,7 +39,9 @@ public class PointSET {
 
     // add the point p to the set (if it is not already in the set)
     public void insert(Point2D p) {
-        pointSet.add(p);
+        if(!pointSet.contains(p)) {
+            pointSet.add(p);
+        }
     }
 
     // does the set contain the point p?
@@ -67,7 +69,20 @@ public class PointSET {
 
     // a nearest neighbor in the set to p; null if set is empty
     public Point2D nearest(Point2D p) {
-        return p;
+        if(pointSet.isEmpty()){
+            return null;
+        }
+
+       Point2D minPoint = null;
+        for(Point2D tmpPoint : pointSet){
+            if(minPoint == null){
+                minPoint = tmpPoint;
+            }
+            if(tmpPoint.distanceTo(p) <= minPoint.distanceTo(p)){
+                minPoint = tmpPoint;
+            }
+        }
+        return minPoint;
     }
 
     public static void main(String[] args) {
