@@ -49,11 +49,20 @@ public class PointSET {
 
     // draw all of the points to standard draw
     public void draw() {
+        for(Point2D p : pointSet){
+            p.draw();
+        }
     }
 
     // all points in the set that are inside the rectangle
     public Iterable<Point2D> range(RectHV rect) {
-        return null;
+        SET<Point2D> range = new SET<Point2D>();
+        for(Point2D point : pointSet){
+            if(rect.contains(point)){
+                range.add(point);
+            }
+        }
+        return range;
     }
 
     // a nearest neighbor in the set to p; null if set is empty

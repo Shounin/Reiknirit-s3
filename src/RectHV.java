@@ -1,3 +1,6 @@
+import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.introcs.StdDraw;
+
 /*************************************************************************
  *  Compilation:  javac RectHV.java
  *  Execution:    java RectHV
