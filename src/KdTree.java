@@ -24,13 +24,13 @@ public class KdTree {
     }
 
     private Node root;
-    private int size;
+    private static int size;
     private boolean alignment = true; //True = horizontal, False = vertical
 
     // construct an empty set of points
     public KdTree() {
-        this.root = null;
-        this.size = 0;
+        root = null;
+        size = 0;
     }
 
     // is the set empty?
@@ -98,7 +98,7 @@ public class KdTree {
                 return contains(p, n.right, !xy);
             }
         }
-        else if(xy == false){
+        else if(!xy){
             if(p.y() < n.point.y()){
                 return contains(p, n.left, !xy);
             }
@@ -106,10 +106,7 @@ public class KdTree {
                 return contains(p, n.right, !xy);
             }
         }
-        if(p.equals(n.point)){
-            return true;
-        }
-        return false;
+        return p.equals(n.point);
     }
 
     // draw all of the points to standard draw
@@ -133,13 +130,13 @@ public class KdTree {
     public static void main(String[] args) {
         In in = new In();
         Out out = new Out();
-        int nrOfRecangles = in.readInt();
+        int nrOfRectangles = in.readInt();
         int nrOfPointsCont = in.readInt();
         int nrOfPointsNear = in.readInt();
-        RectHV[] rectangles = new RectHV[nrOfRecangles];
+        RectHV[] rectangles = new RectHV[nrOfRectangles];
         Point2D[] pointsCont = new Point2D[nrOfPointsCont];
         Point2D[] pointsNear = new Point2D[nrOfPointsNear];
-        for (int i = 0; i < nrOfRecangles; i++) {
+        for (int i = 0; i < nrOfRectangles; i++) {
             rectangles[i] = new RectHV(in.readDouble(), in.readDouble(),
                     in.readDouble(), in.readDouble());
         }
@@ -154,7 +151,7 @@ public class KdTree {
             double x = in.readDouble(), y = in.readDouble();
             set.insert(new Point2D(x, y));
         }
-        for (int i = 0; i < nrOfRecangles; i++) {
+        for (int i = 0; i < nrOfRectangles; i++) {
             // Query on rectangle i, sort the result, and print
             Iterable<Point2D> ptset = set.range(rectangles[i]);
             int ptcount = 0;
@@ -180,7 +177,6 @@ public class KdTree {
         for (int i = 0; i < nrOfPointsNear; i++) {
             out.println((i + 1) + ": " + set.nearest(pointsNear[i]));
         }
-
         out.println();
     }
 }
