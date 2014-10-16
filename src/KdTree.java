@@ -9,26 +9,106 @@ import edu.princeton.cs.introcs.In;
 import edu.princeton.cs.introcs.Out;
 
 public class KdTree {
+
+    private static class Node{
+        Point2D point;
+        Node left;
+        Node right;
+        RectHV rect;
+
+        Node(Point2D p){
+            this.point = p;
+            this.left = null;
+            this.right = null;
+        }
+    }
+
+    private Node root;
+    private int size;
+    private boolean alignment = true; //True = horizontal, False = vertical
+
     // construct an empty set of points
     public KdTree() {
+        this.root = null;
+        this.size = 0;
     }
 
     // is the set empty?
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     // number of points in the set
     public int size() {
-        return 0;
+        return size;
     }
 
     // add the point p to the set (if it is not already in the set)
     public void insert(Point2D p) {
-    };
+        if(isEmpty()){
+            root = new Node(p);
+            size++;
+        }
+        else {
+            root = insert(p, root, alignment);
+        }
+    }
+
+    private Node insert(Point2D p, Node n, boolean xy){
+       if(n == null){
+           size++;
+           return new Node(p);
+       }
+        if(p.equals(n.point)){
+            return n;
+        }
+        if(xy){
+            if(p.x() < n.point.x()){
+                n.left = insert(p, n.left, !xy);
+            }
+            if(p.x() > n.point.x()){
+                n.right = insert(p, n.right, !xy);
+            }
+        }
+        else if(!xy){
+            if(p.y() < n.point.y()){
+                n.left = insert(p, n.left, !xy);
+            }
+            if(p.y() > n.point.y()){
+                n.right = insert(p, n.right, !xy);
+            }
+        }
+        return n;
+    }
 
     // does the set contain the point p?
     public boolean contains(Point2D p) {
+        return contains(p, root, alignment);
+    }
+
+    public boolean contains(Point2D p, Node n, boolean xy){
+        if(n == null){
+            return false;
+        }
+        if(xy){
+            if(p.x() < n.point.x()){
+                return contains(p, n.left, !xy);
+            }
+            if(p.x() > n.point.x()){
+                return contains(p, n.right, !xy);
+            }
+        }
+        else if(xy == false){
+            if(p.y() < n.point.y()){
+                return contains(p, n.left, !xy);
+            }
+            if(p.y() > n.point.y()){
+                return contains(p, n.right, !xy);
+            }
+        }
+        if(p.equals(n.point)){
+            return true;
+        }
         return false;
     }
 
