@@ -15,22 +15,62 @@ public class KdTree {
         Node left;
         Node right;
         RectHV rect;
+        Node parent;
+        boolean alignment;
 
-        Node(Point2D p){
+        Node(Point2D p, Node parent, RectHV rect){
             this.point = p;
             this.left = null;
             this.right = null;
+            this.parent = parent;
+            this.rect = rect;
+
+            if(parent == null){ alignment = true; } //True = Horizontal search (x), false = Vertical search (y)
+            else{
+                this.alignment = setAlignment(this, parent);
+            }
+        }
+
+        private boolean setAlignment(Node n, Node parent){
+            if(parent.left == n){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
     }
 
     private Node root;
     private static int size;
-    private boolean alignment = true; //True = horizontal, False = vertical
 
     // construct an empty set of points
     public KdTree() {
         root = null;
         size = 0;
+    }
+
+    //Make a rectangle
+    private RectHV makeRect(Node parent, boolean level){
+        if(parent == null){
+            return new RectHV(0,0,1,1);
+        }
+        if(level){
+            if(parent.alignment){
+                return new RectHV(parent.rect.xmin(), parent.rect.ymin(),parent.rect.xmax(), parent.point.y());
+            }
+            else{
+                return new RectHV(parent.rect.xmin(), parent.point.y(),parent.rect.xmax(), parent.rect.ymax());
+            }
+        }
+        else{
+            if(parent.alignment){
+                return new RectHV(parent.rect.xmin(), parent.rect.ymin(),parent.point.x(), parent.rect.ymax());
+            }
+            else{
+                return new RectHV(parent.point.x(), parent.rect.ymin(),parent.rect.xmax(), parent.rect.ymax());
+            }
+        }
     }
 
     // is the set empty?
@@ -46,36 +86,40 @@ public class KdTree {
     // add the point p to the set (if it is not already in the set)
     public void insert(Point2D p) {
         if(isEmpty()){
-            root = new Node(p);
+            root = new Node(p, null, makeRect(null, true));
             size++;
         }
-        else {
-            root = insert(p, root, alignment);
+        else if(!contains(p)){
+            root = insert(p, null, root, true);
         }
     }
 
-    private Node insert(Point2D p, Node n, boolean xy){
+    private Node insert(Point2D p, Node parent, Node n, boolean xy){
        if(n == null){
            size++;
-           return new Node(p);
+           return new Node(p, parent, makeRect(parent, xy));
        }
         if(p.equals(n.point)){
             return n;
         }
+
+        //Horizontal search
         if(xy){
             if(p.x() < n.point.x()){
-                n.left = insert(p, n.left, !xy);
+                n.left = insert(p, n, n.left, !xy);
             }
-            if(p.x() > n.point.x()){
-                n.right = insert(p, n.right, !xy);
+            if(p.x() >= n.point.x()){
+                n.right = insert(p, n, n.right, !xy);
             }
         }
-        else if(!xy){
+
+        //Vertical search
+        else{
             if(p.y() < n.point.y()){
-                n.left = insert(p, n.left, !xy);
+                n.left = insert(p, n, n.left, !xy);
             }
-            if(p.y() > n.point.y()){
-                n.right = insert(p, n.right, !xy);
+            if(p.y() >= n.point.y()){
+                n.right = insert(p, n, n.right, !xy);
             }
         }
         return n;
@@ -83,27 +127,31 @@ public class KdTree {
 
     // does the set contain the point p?
     public boolean contains(Point2D p) {
-        return contains(p, root, alignment);
+        return contains(p, null, root, true);
     }
 
-    public boolean contains(Point2D p, Node n, boolean xy){
+    public boolean contains(Point2D p, Node parent, Node n, boolean xy){
         if(n == null){
             return false;
         }
+
+        //Horizontal search
         if(xy){
             if(p.x() < n.point.x()){
-                return contains(p, n.left, !xy);
+                return contains(p, n, n.left, !xy);
             }
             if(p.x() > n.point.x()){
-                return contains(p, n.right, !xy);
+                return contains(p, n, n.right, !xy);
             }
         }
+
+        //Vertical search
         else if(!xy){
             if(p.y() < n.point.y()){
-                return contains(p, n.left, !xy);
+                return contains(p, n, n.left, !xy);
             }
             if(p.y() > n.point.y()){
-                return contains(p, n.right, !xy);
+                return contains(p, n, n.right, !xy);
             }
         }
         return p.equals(n.point);
